@@ -96,9 +96,12 @@ jobs:
       #    path: ${{github.workspace}}/build/${{env.APPIMAGE_NAME}}
       - name: Set up test environment
         run: |
+          mkdir build
+          cd build
           APPIMAGE_NAME=rt-dev-version.AppImage
           echo "AppImage v3" > "$APPIMAGE_NAME"
           echo "APPIMAGE_NAME=$APPIMAGE_NAME" >> $GITHUB_ENV
+          cd ..
           VERSION="v3"
           echo "RT_VERSION=$VERSION" >> $GITHUB_ENV
       - name: Prepare for publishing
@@ -113,7 +116,7 @@ jobs:
           echo "Setting dev AppImage version file name."
           APPIMAGE_DEV_VERSION_NAME="RawTherapee-dev-x86_64-version.txt"
           echo "dev AppImage version file name is '$APPIMAGE_DEV_VERSION_NAME'."
-          echo "Creating deve AppImage version file."
+          echo "Creating dev AppImage version file."
           echo "$RT_VERSION" > "$APPIMAGE_DEV_VERSION_NAME"
           echo "Recording dev AppImage version file name."
           echo "APPIMAGE_DEV_VERSION_NAME=$APPIMAGE_DEV_VERSION_NAME" >> $GITHUB_ENV
