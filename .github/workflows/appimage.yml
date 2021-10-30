@@ -110,7 +110,7 @@ jobs:
           echo "APPIMAGE_DEV_NAME=$APPIMAGE_DEV_NAME" >> $GITHUB_ENV
       - name: Publish artifacts
         uses: softprops/action-gh-release@v1
-        if: ${{github.ref == refs/heads/appimage-dev}}
+        if: ${{github.ref == 'refs/heads/appimage-dev'}}
         with:
           tag_name: nightly-github-actions
           files: ${{env.APPIMAGE_DEV_NAME}}
