@@ -97,7 +97,7 @@ jobs:
           mkdir build
           cd build
           APPIMAGE_NAME=rt-dev-version.AppImage
-          echo "AppImage" > "$APPIMAGE_NAME"
+          echo "AppImage v2" > "$APPIMAGE_NAME"
           echo "APPIMAGE_NAME=$APPIMAGE_NAME" >> $GITHUB_ENV
       - name: Prepare for publishing
         run: |
