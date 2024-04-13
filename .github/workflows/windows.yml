@@ -144,7 +144,7 @@ jobs:
           echo -e '[Settings]\ngtk-button-images=1' > "$BUILD_DIR/share/gtk-3.0/settings.ini"
 
       - name: Create installer
-        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev')}}
+        if: ${{matrix.build_type == 'release'}}
         working-directory: build/${{matrix.build_type}}
         shell: pwsh
         run: |
@@ -194,7 +194,7 @@ jobs:
           path: build\${{env.ARTIFACT_NAME}}
 
       - name: Upload installer
-        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev')}}
+        if: ${{matrix.build_type == 'release'}}
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.ARTIFACT_NAME}}.exe
