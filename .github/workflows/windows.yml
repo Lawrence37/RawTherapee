@@ -153,7 +153,7 @@ jobs:
           echo -e '[Settings]\ngtk-button-images=1' > "$BUILD_DIR/share/gtk-3.0/settings.ini"
 
       - name: Create installer
-        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev')}}
+        if: ${{matrix.build_type == 'release'}}
         working-directory: build/${{matrix.build_type}}
         shell: pwsh
         run: |
@@ -203,14 +203,13 @@ jobs:
           path: build\${{env.ARTIFACT_NAME}}
 
       - name: Upload installer
-        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev')}}
+        if: ${{matrix.build_type == 'release'}}
         uses: actions/upload-artifact@v4
         with:
           name: ${{env.ARTIFACT_NAME}}.exe
           path: build\${{env.ARTIFACT_NAME}}.exe
 
       - name: Prepare for publishing
-        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev'}}
         run: |
           echo "Setting publish name."
           PUBLISH_NAME="RawTherapee_${REF_NAME_FILTERED}_win64_${{matrix.arch}}_${{matrix.build_type}}"
@@ -247,7 +246,6 @@ jobs:
 
       - name: Prepare for publishing pre-dev
         id: prepare-publish-pre-dev
-        if: ${{github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label)}}
         run: |
           echo "Making ref name."
           REF_NAME_FILTERED="$(echo '${{github.event.pull_request.head.label}}' | tr ':' '_' | sed 's/[^A-z0-9_.-]//g')"
@@ -272,7 +270,7 @@ jobs:
 
       - name: Publish pre-dev artifacts
         uses: softprops/action-gh-release@v2
-        if: ${{steps.prepare-publish-pre-dev.outcome == 'success'}}
+        if: ${{github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label)}}
         with:
           tag_name: pre-dev-github-actions
           repository: RawTherapee/RawTherapee
@@ -282,7 +280,7 @@ jobs:
 
       - name: Publish pre-dev installer
         uses: softprops/action-gh-release@v2
-        if: ${{steps.prepare-publish-pre-dev.outcome == 'success' && matrix.build_type == 'release'}}
+        if: ${{github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label)}}
         with:
           tag_name: pre-dev-github-actions
           repository: RawTherapee/RawTherapee
