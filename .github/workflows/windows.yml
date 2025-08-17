@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 env:
-  publish_pre_dev_labels: '["RawTherapee:windows-arm"]'
+  publish_pre_dev_labels: '["Lawrence37:windows-arm-tester-test"]'
 
 
 jobs:
@@ -45,125 +45,22 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           location: C:\msys2
-          update: true
           msystem: ${{env.MSYS2_ENV_NAME}}
-          install: |
-            git
-            intltool
-          pacboy: |
-            cc:p
-            pkgconf:p
-            cmake:p
-            autotools:p
-            ninja:p
-            gtkmm3:p
-            lcms2:p
-            fftw:p
-            lensfun:p
-            libiptcdata:p
-            libjxl:p
-            exiv2:p
-
-      - name: Configure build
-        run: |
-          export REF_NAME_FILTERED="$(echo '${{github.ref_name}}' | sed 's/[^A-z0-9_.-]//g')"
-
-          if [ '${{github.ref_type}}' == 'tag' ]; then
-            export CACHE_SUFFIX=""
-          else
-            echo "Setting cache suffix."
-            export CACHE_SUFFIX="5-$REF_NAME_FILTERED"
-            echo "Cache suffix is '$CACHE_SUFFIX'."
-          fi
-
-          echo "Running CMake configure."
-          cmake \
-            -G "Ninja" \
-            -DCMAKE_BUILD_TYPE='${{matrix.build_type}}' \
-            -DCACHE_NAME_SUFFIX="$CACHE_SUFFIX" \
-            -DPROC_TARGET_NUMBER="1" \
-            -DLENSFUNDBDIR="share/lensfun" \
-            -S . -B build
-
-          echo "Recording filtered ref name."
-          echo "REF_NAME_FILTERED=$REF_NAME_FILTERED" >> "$(cygpath -u $GITHUB_ENV)"
 
       - name: Build RawTherapee
         run: |
-          echo "Running CMake install."
-          cmake --build build --target install
-
-      - name: Include Lensfun
-        run: |
-          echo "Updating Lensfun database."
-          lensfun-update-data
-          echo "Creating Lensfun directory in the build directory."
-          mkdir -p 'build/${{matrix.build_type}}/share'
-          echo "Copying Lensfun database to the build directory."
-          cp -R "/C/msys2/msys64/${{env.MSYS2_ENV_PREFIX}}/var/lib/lensfun-updates/version_1" 'build/${{matrix.build_type}}/share/lensfun'
-
-      - name: Bundle dependencies
-        run: |
-          echo "Listing shared library dependencies."
-          ldd "./build/${{matrix.build_type}}/rawtherapee.exe"
-          echo "Finding DLLs to include."
-          DLLS=($(ldd "./build/${{matrix.build_type}}/rawtherapee.exe" | grep "/${{env.MSYS2_ENV_PREFIX}}/bin/" | awk '{print($1)'}))
-          echo "Required DLLs are: ${DLLS[*]}"
-
-          echo "Getting workspace path."
-          export BUILD_DIR="$(pwd)/build/${{matrix.build_type}}"
-          echo "Build directory is '$BUILD_DIR'."
-          echo "Changing working directory to MSYS2 ${{env.MSYS2_ENV_NAME}}."
-          cd "/C/msys2/msys64/${{env.MSYS2_ENV_PREFIX}}"
-          echo "Copying DLLs and EXEs."
-
-          cd ./bin
-          cp \
-            "gdbus.exe" \
-            "gspawn-win64-helper.exe" \
-            "gspawn-win64-helper-console.exe" \
-            ${DLLS[*]} \
-            "$BUILD_DIR"
-          cd -
-
-          echo "Copying Adwaita theme."
-          mkdir -p "$BUILD_DIR/share/icons/Adwaita"
-          cd 'share/icons/Adwaita/'
-          mkdir -p "$BUILD_DIR/share/icons/Adwaita/symbolic"
-          cp -r \
-            "symbolic/actions" \
-            "symbolic/devices" \
-            "symbolic/mimetypes" \
-            "symbolic/places" \
-            "symbolic/status" \
-            "symbolic/ui" \
-            "$BUILD_DIR/share/icons/Adwaita/symbolic"
-          cp 'index.theme' "$BUILD_DIR/share/icons/Adwaita"
-          cd -
-
-          echo "Copying GDK pixbuf."
-          mkdir -p "$BUILD_DIR/lib"
-          cp -r 'lib/gdk-pixbuf-2.0' "$BUILD_DIR/lib/gdk-pixbuf-2.0"
-
-          echo "Copying GLib schemas."
-          mkdir -p "$BUILD_DIR/share/glib-2.0/schemas"
-          cp 'share/glib-2.0/schemas/gschemas.compiled' "$BUILD_DIR/share/glib-2.0/schemas"
-
-          echo "Creating GTK settings.ini."
-          mkdir -p "$BUILD_DIR/share/gtk-3.0/"
-          echo -e '[Settings]\ngtk-button-images=1' > "$BUILD_DIR/share/gtk-3.0/settings.ini"
+          export REF_NAME_FILTERED="$(echo '${{github.ref_name}}' | sed 's/[^A-z0-9_.-]//g')"
+          echo "REF_NAME_FILTERED=$REF_NAME_FILTERED" >> "$(cygpath -u $GITHUB_ENV)"
+          BUILD_DIR="$(pwd)/build/${{matrix.build_type}}"
+          mkdir -p "$BUILD_DIR"
+          echo "Random contents" >> "$BUILD_DIR/random.txt"
+          echo "Version: windows-arm-tester-test-1" > "$BUILD_DIR/AboutThisBuild.txt"
 
       - name: Create installer
         if: ${{matrix.build_type == 'release'}}
-        working-directory: build/${{matrix.build_type}}
-        shell: pwsh
+        working-directory: build
         run: |
-          echo "Installing Inno Setup."
-          choco install innosetup
-          echo "Setup file:"
-          type "WindowsInnoSetup.iss"
-          echo "Creating installer from script."
-          iscc /F"installer" "WindowsInnoSetup.iss"
+          echo "xyz" > installer.exe
 
       - name: Prepare artifact name
         id: prepare-artifact-name
@@ -228,7 +125,7 @@ jobs:
     steps:
       - name: Set up MSYS2
         id: setup-msys2
-        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || (github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label))}}
+        # if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || (github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label))}}
         uses: msys2/setup-msys2@v2
         with:
           location: C:\msys2
@@ -297,7 +194,7 @@ jobs:
 
       - name: Prepare for publishing pre-dev
         id: prepare-publish-pre-dev
-        if: ${{github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label)}}
+        # if: ${{github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label)}}
         run: |
           echo "Making ref name."
           REF_NAME_FILTERED="$(echo '${{github.event.pull_request.head.label}}' | tr ':' '_' | sed 's/[^A-z0-9_.-]//g')"
@@ -325,7 +222,7 @@ jobs:
         if: ${{steps.prepare-publish-pre-dev.outcome == 'success'}}
         with:
           tag_name: pre-dev-github-actions
-          repository: RawTherapee/RawTherapee
+          # repository: RawTherapee/RawTherapee
           files: |
             build/${{env.PUBLISH_NAME}}.zip
             build/${{env.PUBLISH_NAME}}-AboutThisBuild.txt
@@ -335,5 +232,5 @@ jobs:
         if: ${{steps.prepare-publish-pre-dev.outcome == 'success' && matrix.build_type == 'release'}}
         with:
           tag_name: pre-dev-github-actions
-          repository: RawTherapee/RawTherapee
+          # repository: RawTherapee/RawTherapee
           files: build/${{env.PUBLISH_NAME}}.exe
