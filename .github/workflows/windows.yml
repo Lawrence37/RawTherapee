@@ -53,7 +53,9 @@ jobs:
           echo "REF_NAME_FILTERED=$REF_NAME_FILTERED" >> "$(cygpath -u $GITHUB_ENV)"
           BUILD_DIR="$(pwd)/build/${{matrix.build_type}}"
           mkdir -p "$BUILD_DIR"
-          echo "Random contents" >> "$BUILD_DIR/random.txt"
+          echo "echo RawTherapee CLI" > "$BUILD_DIR/rawtherapee-cli.exe"
+          echo "echo RawTherapee GUI; sleep 100" > "$BUILD_DIR/rawtherapee.exe"
+          chmod +x "$BUILD_DIR/rawtherapee-cli.exe" "$BUILD_DIR/rawtherapee.exe"
           echo "Version: windows-arm-tester-test-1" > "$BUILD_DIR/AboutThisBuild.txt"
 
       - name: Create installer
@@ -125,7 +127,7 @@ jobs:
     steps:
       - name: Initialize
         id: initialize
-        # if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || (github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label))}}
+        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || (github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label))}}
         run: |
           echo "Proceeding with job."
 
