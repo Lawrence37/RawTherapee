@@ -216,7 +216,7 @@ jobs:
       contents: write
     defaults:
       run:
-        shell: msys2 {0}
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -226,17 +226,15 @@ jobs:
       ARTIFACT_NAME: ${{ format('{0}_{1}_{2}', needs.build.outputs.ARTIFACT_NAME_PREFIX, matrix.arch, matrix.build_type) }}
       REF_NAME_FILTERED: ${{needs.build.outputs.REF_NAME_FILTERED}}
     steps:
-      - name: Set up MSYS2
-        id: setup-msys2
+      - name: Initialize
+        id: initialize
         if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || (github.event_name == 'pull_request' && contains(fromJSON(env.publish_pre_dev_labels), github.event.pull_request.head.label))}}
-        uses: msys2/setup-msys2@v2
-        with:
-          location: C:\msys2
-          msystem: 'MINGW64'
+        run: |
+          echo "Proceeding with job."
 
       - name: Download build artifact
         id: download-build-artifact
-        if: ${{steps.setup-msys2.outcome == 'success'}}
+        if: ${{steps.initialize.outcome == 'success'}}
         uses: actions/download-artifact@v4
         with:
           name: ${{env.ARTIFACT_NAME}}
