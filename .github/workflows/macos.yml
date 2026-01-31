@@ -183,6 +183,7 @@ jobs:
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DWITH_LTO="ON" \
             -DLENSFUNDBDIR="/Applications/RawTherapee.app/Contents/Resources/share/lensfun" \
+            -DWITH_SIMDE="ON" \
             -DCMAKE_C_COMPILER=clang \
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_C_FLAGS="-arch arm64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
