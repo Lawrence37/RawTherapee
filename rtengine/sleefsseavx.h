@@ -907,7 +907,7 @@ typedef struct {
 static INLINE vfloat vabsf(vfloat f) { return (vfloat)vandnotm((vmask)vcast_vf_f(-0.0f), (vmask)f); }
 static INLINE vfloat vnegf(vfloat f) { return (vfloat)vxorm((vmask)f, (vmask)vcast_vf_f(-0.0f)); }
 
-#if defined(__SSE4_1__) || defined(RT_SIMDE)
+#ifdef __SSE4_1__
 // only one instruction when using SSE4.1
 static INLINE vfloat vself(vmask mask, vfloat x, vfloat y) {
     return _mm_blendv_ps(y,x,(vfloat)mask);
@@ -1464,7 +1464,7 @@ static INLINE void vconvertrgbrgbrgbrgb2rrrrggggbbbb (const float * src, vfloat 
     bv = _mm_setr_ps(src[2],src[5],src[8],src[11]);
 }
 
-#if (defined( __SSE4_1__ ) && defined( __x86_64__ )) || defined(RT_SIMDE)
+#if defined( __SSE4_1__ ) && defined( __x86_64__ )
 static INLINE vfloat vceilf(vfloat x) {
     return _mm_round_ps(x, _MM_FROUND_TO_POS_INF |_MM_FROUND_NO_EXC);
 }
