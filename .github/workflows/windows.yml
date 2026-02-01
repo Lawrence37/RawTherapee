@@ -64,6 +64,22 @@ jobs:
             libjxl:p
             exiv2:p
 
+      - name: Install SIMDe
+        if: ${{matrix.arch != 'x86_64'}}
+        run: |
+          echo "Cloning SIMDe source."
+          git clone --depth 1 --branch 'v0.8.2' 'https://github.com/simd-everywhere/simde.git'
+          echo "Setting up build directory."
+          cd simde
+          meson setup build
+          echo "Configuring build."
+          cd build
+          meson configure -D tests=False
+          echo "Building SIMDe."
+          meson compile
+          echo "Installing SIMDe."
+          meson install
+
       - name: Configure build
         run: |
           export REF_NAME_FILTERED="$(echo '${{github.ref_name}}' | sed 's/[^A-z0-9_.-]//g')"
