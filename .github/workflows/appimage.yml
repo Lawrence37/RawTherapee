@@ -311,6 +311,25 @@ jobs:
           cmake .. -DBUILD_TESTING=OFF
           sudo make -j$(nproc) install
 
+      - name: Register SIMDe with pkg-config
+        run: |
+          echo "Getting SIMDe version."
+          SIMDE_VERSION=$(dpkg-query -W -f='${Version}' libsimde-dev | sed 's/-.*//')
+          echo "SIMDe version is '$SIMDE_VERSION'."
+
+          echo "Writing .pc file for SIMDe."
+          SIMDE_PC_FILE_PATH="/usr/share/pkgconfig/simde.pc"
+          cat <<EOF > "${SIMDE_PC_FILE_PATH}"
+            prefix=/usr
+            includedir=\${prefix}/include
+
+            Name: SIMDe
+            Description: Portable SIMD wrapper library
+            Version: ${SIMDE_VERSION}
+            Cflags: -I\${includedir}
+            EOF
+          echo "Contents of ${SIMDE_PC_FILE_PATH}:"
+          cat "${SIMDE_PC_FILE_PATH}"
 
       - name: Configure build
         run: |
