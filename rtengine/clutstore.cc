@@ -88,7 +88,7 @@ bool loadFile(
 vfloat2 getClutValues(const AlignedBuffer<std::uint16_t>& clut_image, size_t index)
 {
     const vint v_values = _mm_loadu_si128(reinterpret_cast<const vint*>(clut_image.data + index));
-#ifdef __SSE4_1__
+#if defined(__SSE4_1__) || defined(RT_SIMDE)
     return {
         _mm_cvtepi32_ps(_mm_cvtepu16_epi32(v_values)),
         _mm_cvtepi32_ps(_mm_cvtepu16_epi32(_mm_srli_si128(v_values, 8)))

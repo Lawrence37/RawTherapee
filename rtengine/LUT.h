@@ -433,7 +433,7 @@ public:
     }
 
     // vectorized LUT access with integer indices. Clips at lower and upper bounds
-#ifdef __SSE4_1__
+#if defined(__SSE4_1__) || defined(RT_SIMDE)
     template<typename U = T, typename = typename std::enable_if<std::is_same<U, float>::value>::type>
     vfloat operator[](vint idxv) const
     {
