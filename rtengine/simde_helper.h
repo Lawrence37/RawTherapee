@@ -18,15 +18,16 @@
 #pragma once
 
 #ifdef RT_SIMDE
-
 #include <simde/simde-common.h>
+#endif
 
 // Check if the current version of SIMDe is at least major.minor.patch.
 #if defined(SIMDE_VERSION_MAJOR) && defined(SIMDE_VERSION_MINOR) && defined(SIMDE_VERSION_MICRO)
-#define SIMDE_VERSION_CHECK(major, minor, patch) (SIMDE_VERSION >= HEDLEY_VERSION_ENCODE(major, minor, patch))
+#define SIMDE_VERSION_CHECK(major, minor, patch) (                                                  \
+    (SIMDE_VERSION_MAJOR > (major)) ||                                                             \
+        (SIMDE_VERSION_MAJOR == (major) && SIMDE_VERSION_MINOR > (minor)) ||                        \
+        (SIMDE_VERSION_MAJOR == (major) && SIMDE_VERSION_MINOR == (minor) && SIMDE_VERSION_MICRO >= (patch)))
 #else
 #define SIMDE_VERSION_CHECK(major, minor, patch) (0)
 #endif
-
-#endif // RT_SIMDE
 

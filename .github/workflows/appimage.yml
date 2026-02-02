@@ -304,10 +304,11 @@ jobs:
         working-directory: .
         run: |
           echo "Building and installing libjxl v0.11.1..."
-          git clone https://github.com/libjxl/libjxl.git
+          git clone --depth 1 --branch 'v0.11.1' 'https://github.com/libjxl/libjxl.git'
           cd libjxl
-          git checkout v0.11.1
           ./deps.sh
+          mkdir build
+          cd build
           cmake .. -DBUILD_TESTING=OFF
           sudo make -j$(nproc) install
 
