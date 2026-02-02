@@ -321,14 +321,15 @@ jobs:
           echo "Writing .pc file for SIMDe."
           SIMDE_PC_FILE_PATH="/usr/share/pkgconfig/simde.pc"
           cat <<EOF > "${SIMDE_PC_FILE_PATH}"
-            prefix=/usr
-            includedir=\${prefix}/include
+          prefix=/usr
+          includedir=\${prefix}/include
 
-            Name: SIMDe
-            Description: Portable SIMD wrapper library
-            Version: ${SIMDE_VERSION}
-            Cflags: -I\${includedir}
-            EOF
+          Name: SIMDe
+          Description: Portable SIMD wrapper library
+          Version: ${SIMDE_VERSION}
+          Cflags: -I\${includedir}
+          EOF
+
           echo "Contents of ${SIMDE_PC_FILE_PATH}:"
           cat "${SIMDE_PC_FILE_PATH}"
 
