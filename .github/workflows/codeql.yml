@@ -90,9 +90,7 @@ jobs:
           gcc --version
 
           echo "Running make install."
-          make -j$(nproc) install DESTDIR=AppDir/usr/bin
-          echo "Moving usr/bin/share to usr/share."
-          mv AppDir/usr/bin/share AppDir/usr/
+          make -j$(nproc)
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
